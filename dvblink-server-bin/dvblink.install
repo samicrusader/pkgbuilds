@@ -1,0 +1,58 @@
+export DVBLINK_CONFIG_DIR="/etc/dvblink"
+export DVBLINK_COMMON_DIR=${DVBLINK_CONFIG_DIR}
+export DVBLINK_ROOT_DIR="/opt/dvblink"
+export DVBLINK_TMP_DIR="/tmp/6f345fc1-fc30-44e7-b69f-7375def90b02"
+export SHARE_PATH="/var/lib/dvblink"
+
+pre_install() {
+    # Stop the server
+    if [ -f $DVBLINK_ROOT_DIR/stop.sh ]; then
+        $DVBLINK_ROOT_DIR/stop.sh
+    fi
+    
+    rm -rf $DVBLINK_TMP_DIR
+
+    #if upgrading - copy the config files to a temp dir
+    if [ -d ${DVBLINK_CONFIG_DIR} ]; then
+        mkdir -p $DVBLINK_TMP_DIR
+        cp ${DVBLINK_CONFIG_DIR}/*.xml $DVBLINK_TMP_DIR/
+    fi
+}
+
+post_install() {
+    # Copy configs from upgrade temporary directory to server directory
+        if [ -d ${DVBLINK_TMP_DIR} ]; then
+        cp -rf $DVBLINK_TMP_DIR/*.xml ${DVBLINK_ROOT_DIR}/config/
+    fi
+    rm -rf ${DVBLINK_TMP_DIR}
+
+    # Create share directory
+    #mkdir -p -m a=rwx ${SHARE_PATH}
+    cp -rf ${DVBLINK_ROOT_DIR}/share.inst/* ${SHARE_PATH}
+    rm -rf ${DVBLINK_ROOT_DIR}/share.inst
+    ${DVBLINK_ROOT_DIR}/dvblink_reg -offlineupdatesource XMLTV
+    mkdir -p -m a=rwx ${SHARE_PATH}/RecordedTV
+    mkdir -p -m a=rwx ${SHARE_PATH}/xmltv
+    cp -f ${DVBLINK_CONFIG_DIR}/XMLTV_Readme.txt ${SHARE_PATH}/xmltv/
+    mkdir -p -m u=rwx,g=r,o=r ${SHARE_PATH}/database
+    mkdir -p -m a=rwx ${SHARE_PATH}/channel_logo
+    if [ ! -e "$SHARE_PATH/database/dlrecorder_settings.xml" ]; then
+        cp -f ${DVBLINK_ROOT_DIR}/sinks/dlrecorder/dlrecorder_settings.xml ${SHARE_PATH}/database/
+    fi
+
+    echo 'Enable & Start DVBLink Server: systemctl enable --now dvblink.service'
+}
+
+pre_upgrade() {
+    # Stop the server
+    if [ -f $DVBLINK_ROOT_DIR/stop.sh ]; then
+        $DVBLINK_ROOT_DIR/stop.sh
+    fi
+}
+
+pre_remove() {
+    # Stop the server
+    if [ -f $DVBLINK_ROOT_DIR/stop.sh ]; then
+        $DVBLINK_ROOT_DIR/stop.sh
+    fi
+}

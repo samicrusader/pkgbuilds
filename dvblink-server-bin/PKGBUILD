@@ -1,0 +1,95 @@
+# Maintainer: samicrusader <hi@samicrusader.me>
+
+pkgname=dvblink-server-bin
+pkgver=6.0.0
+pkgrel=1
+pkgdesc="TV that's always with you!"
+arch=('x86_64')
+url='https://dvblogic.com/en/'
+license=('custom:"Copyright (c) 2006-2017 DVBLogic (info@dvblogic.com)"')
+depends=('c-ares' 'curl' 'dbus' 'dvblink-viewer' 'icu' 'libiconv' 'libidn11' 'libssh2' 'libxml2' 'openssl' 'python2' 'readline' 'util-linux-libs' 'xz' 'zstd')
+makedepends=('dpkg')
+provides=('dvblink-server')
+install="dvblink.install"
+source=("dvblink-${pkgver}.deb::https://dvblogic.com/download/installations/pc-linux-ubuntu-x86_64/dvblink-server-pc-linux-ubuntu-x86_64-${pkgver}.deb" 'dvblink-server')
+noextract=("dvblink-${pkgver}.deb")
+sha256sums=('5021f71b06e0c28ac877101957959e1bf2f4c28e489cf64ba4b6d3581c6d78e8'
+            '696101fa6e67c9595f8d1cfbc79ded2770c44a32af435e6b8956ead2e8f40b2f')
+options=("!strip")
+
+package() {
+    echo "Extracting deb..."
+    dpkg -x "dvblink-${pkgver}.deb" "$pkgdir"
+
+    echo "Removing DVBLink Player from this package..."
+    rm "${pkgdir}/usr/local/bin/dvblink/dvblink.desktop"
+    rm "${pkgdir}/usr/local/bin/dvblink/share.inst/dvblink_player.tar.gz"
+
+    echo "Symlinking DVBLink Player..."
+    #ln -s "/opt/dvblink_player"
+    ln -s "/usr/local/bin/dvblink_viewer/dvblink_player" "${pkgdir}/usr/local/bin/dvblink/dvblink_player"
+
+    echo "Moving configuration directory from /usr/local/bin/dvblink/config to /etc/dvblink..."
+    mv "${pkgdir}/usr/local/bin/dvblink/config" "${pkgdir}/etc/dvblink"
+    ln -s "/etc/dvblink" "${pkgdir}/usr/local/bin/dvblink/config"
+
+    echo "Moving share directory to /var/lib/dvblink..."
+    mkdir -p -m a=rwx "${pkgdir}/var/lib/dvblink"
+    ln -s "/var/lib/dvblink" "${pkgdir}/usr/local/bin/dvblink/share" 
+
+    echo "Installing Python 2.6 libraries..."
+    mkdir "${pkgdir}/usr/lib"
+    cp "${pkgdir}/usr/local/bin/dvblink/lib/libpython2.6.so.1.0" "${pkgdir}/usr/lib/libpython2.6.so.1.0"
+    ln -s "/usr/lib/libpython2.6.so.1.0" "${pkgdir}/usr/lib/libpython2.6.so.1"
+    ln -s "/usr/lib/libpython2.6.so.1.0" "${pkgdir}/usr/lib/libpython2.6.so"
+
+    echo "Removing pre-installed libraries in favor of system ones..."
+    rm -rf "${pkgdir}/usr/local/bin/dvblink/lib"
+    rm "${pkgdir}/usr/local/bin/dvblink/unzip"
+    ln -s "/usr/bin/unzip" "${pkgdir}/usr/local/bin/dvblink/unzip"
+    rm "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/ffmpeg"
+    ln -s "/usr/bin/ffmpeg" "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/ffmpeg"
+    rm "${pkgdir}/usr/local/bin/dvblink/common/sqlite3"
+    ln -s "/usr/bin/ffmpeg" "${pkgdir}/usr/local/bin/dvblink/common/sqlite3"
+    sed -i -e 's/export LD_LIBRARY_PATH=${DVBLINK_ROOT_DIR}\/lib//g' "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/make_thumbnail.sh"
+    sed -i -e 's/export LD_LIBRARY_PATH=${DVBLINK_ROOT_DIR}\/lib//g' "${pkgdir}/usr/local/bin/dvblink/reg.sh"
+
+    #echo "Creating Python 2.6 symlink to Python 2.7..."
+    #echo "If this part of the process creates problems for you, please comment on the AUR page."
+    #mkdir "${pkgdir}/usr/lib"
+    #ln -s "/usr/lib/libpython2.7.so" "${pkgdir}/usr/lib/libpython2.6.so.1.0"
+    #ln -s "${pkgdir}/usr/lib/libpython2.6.so.1.0" "${pkgdir}/usr/lib/libpython2.6.so.1"
+    #ln -s "${pkgdir}/usr/lib/libpython2.6.so.1.0" "${pkgdir}/usr/lib/libpython2.6.so"
+
+    echo "Removing useless artifacts/wrappers..."
+    rm "${pkgdir}/usr/local/bin/dvblink/deb_control"
+    rm "${pkgdir}/usr/local/bin/dvblink/start.sh"
+    rm "${pkgdir}/usr/local/bin/dvblink/start2.sh"
+
+    echo "Moving DVBLink Server from /usr/local/bin/dvblink to /opt/dvblink..."
+    mkdir "${pkgdir}/opt"
+    mv "${pkgdir}/usr/local/bin/dvblink" "${pkgdir}/opt/dvblink"
+    rm -r "${pkgdir}/usr/local"
+
+    echo "Correcting paths..."
+    sed -i -e 's/\/usr\/local\/bin\/dvblink/\/opt\/dvblink/g' "${pkgdir}/etc/dvblink/dvblink_settings.xml"
+    sed -i -e 's/\/usr\/local\/bin\/dvblink/\/opt\/dvblink/g' "${pkgdir}/opt/dvblink/common/ffmpeg/make_thumbnail.sh"
+    sed -i -e 's/\/usr\/local\/bin\/dvblink/\/opt\/dvblink/g' "${pkgdir}/opt/dvblink/reg.sh"
+    sed -i -e 's/\/usr\/local\/bin\/dvblink/\/opt\/dvblink/g' "${pkgdir}/opt/dvblink/stop.sh"
+    sed -i -e 's/\/usr\/local\/bin\/dvblink\/share/\/var\/lib\/dvblink/g' "${pkgdir}/opt/dvblink/sinks/dlrecorder/dlrecorder_settings.xml"
+    sed -i -e 's/\/usr\/local\/bin\/dvblink\/share/\/var\/lib\/dvblink/g' "${pkgdir}/opt/dvblink/sinks/dlrecorder/recorder_defaults.xml"
+
+    echo "Correcting directory permissions..."
+    find "${pkgdir}" -type d -exec chmod 755 {} +
+
+    echo "Installing dvblink launch script..."
+    install -D -m755 "${srcdir}/dvblink-server" "${pkgdir}/usr/bin/dvblink-server"
+
+    echo "Creating start.sh..."
+    set +H
+    echo -e "#!/bin/sh\n/usr/bin/dvblink-server -command_line_mode\n" > "${pkgdir}/opt/dvblink/start.sh"
+    chmod 755 "${pkgdir}/opt/dvblink/start.sh"
+
+    echo "Symlinking launch script to start2.sh..."
+    ln -s "/usr/bin/dvblink-server" "${pkgdir}/opt/dvblink/start2.sh"
+}

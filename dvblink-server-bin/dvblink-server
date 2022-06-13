@@ -1,0 +1,12 @@
+#!/bin/sh
+
+export DVBLINK_ROOT_DIR="/opt/dvblink"
+export DVBLINK_CONFIG_DIR="/etc/dvblink"
+export DVBLINK_COMMON_DIR=${DVBLINK_CONFIG_DIR}
+
+current_dir=`pwd`
+cd ${DVBLINK_ROOT_DIR}/common/
+sh ./start-sources.sh
+cd $current_dir
+
+${DVBLINK_ROOT_DIR}/dvblink_server $1 $2 $3 $4
