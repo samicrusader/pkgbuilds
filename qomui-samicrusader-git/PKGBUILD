@@ -2,7 +2,7 @@
 # Maintainer: Mark Wagie <mark dot wagie at tutanota dot com>
 # Co-Maintainer: librewish <librewish at gmail dot com>
 pkgname=qomui-git
-pkgver=0.8.2.r40.65b6cbd
+pkgver=0.8.2.r41.65b6cbd
 pkgrel=1
 pkgdesc="Qt OpenVPN Management UI (samicrusader fork)"
 arch=('x86_64')
