@@ -1,0 +1,7 @@
+# https://github.com/avelino/aur
+pkg/
+src/
+*.pkg.tar.xz
+
+# qomui-samicrusader-git
+qomui-samicrusader-git/qomui/
