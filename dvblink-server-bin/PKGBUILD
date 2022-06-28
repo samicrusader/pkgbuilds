@@ -47,10 +47,10 @@ package() {
     rm -rf "${pkgdir}/usr/local/bin/dvblink/lib"
     rm "${pkgdir}/usr/local/bin/dvblink/unzip"
     ln -s "/usr/bin/unzip" "${pkgdir}/usr/local/bin/dvblink/unzip"
-    rm "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/ffmpeg"
-    ln -s "/usr/bin/ffmpeg" "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/ffmpeg"
+    #rm "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/ffmpeg"
+    #ln -s "/usr/bin/ffmpeg" "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/ffmpeg"
     rm "${pkgdir}/usr/local/bin/dvblink/common/sqlite3"
-    ln -s "/usr/bin/ffmpeg" "${pkgdir}/usr/local/bin/dvblink/common/sqlite3"
+    ln -s "/usr/bin/sqlite3" "${pkgdir}/usr/local/bin/dvblink/common/sqlite3"
     sed -i -e 's/export LD_LIBRARY_PATH=${DVBLINK_ROOT_DIR}\/lib//g' "${pkgdir}/usr/local/bin/dvblink/common/ffmpeg/make_thumbnail.sh"
     sed -i -e 's/export LD_LIBRARY_PATH=${DVBLINK_ROOT_DIR}\/lib//g' "${pkgdir}/usr/local/bin/dvblink/reg.sh"
 
