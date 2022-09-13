@@ -1,8 +1,9 @@
 # Maintainer: samicrusader (hi@samicrusader.me)
 # Contributor: Mark Wagie <mark dot wagie at tutanota dot com>
 # Contributor: librewish <librewish at gmail dot com>
-pkgname=qomui-samicrusader-git
-pkgver=0.8.2.r40.65b6cbd
+_pkgname=qomui
+pkgname=$_pkgname-samicrusader-git
+pkgver=0.8.4.r0.8d5267b
 pkgrel=1
 pkgdesc="Qt OpenVPN Management UI (samicrusader fork)"
 arch=('x86_64')
@@ -10,7 +11,7 @@ url="https://github.com/samicrusader/qomui"
 license=('GPL3')
 depends=('python-pyqt5' 'python-dbus' 'openvpn' 'stunnel' 'bind-tools'
          'python-psutil' 'python-requests' 'python-lxml' 'python-beautifulsoup4'
-         'python-pexpect' 'wireguard-tools' 'python-cryptography')
+         'python-pexpect' 'wireguard-tools' 'python-cryptography' 'python-netifaces')
 makedepends=('git' 'python-setuptools')
 optdepends=('geoip: to identify server locations'
             'dnsmasq: required for bypassing OpenVPN'
@@ -22,21 +23,21 @@ source=('git+https://github.com/samicrusader/qomui.git')
 sha256sums=('SKIP')
 
 pkgver() {
-  cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${_pkgname%-git}"
   printf "%s" "$(git describe --long --tags | sed 's/^v//;s/\([^-]*-\)g/r\1/;s/-/./g')"
 }
 
 build() {
-  cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${_pkgname%-git}"
   python setup.py build
 }
 
 check() {
-  cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${_pkgname%-git}"
   python setup.py test
 }
 
 package() {
-  cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${_pkgname%-git}"
   python setup.py install --root="$pkgdir/" --optimize=1 --skip-build
 }
