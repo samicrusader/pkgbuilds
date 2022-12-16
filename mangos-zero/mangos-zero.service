@@ -1,0 +1,16 @@
+[Unit]
+Description=MaNGOS Zero
+Documentation=https://github.com/mangoszero/server
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/mangos/zero.pid
+ExecStartPre=+/usr/bin/install -o mangoszero -g mangos /dev/null /run/mangos/zero.pid
+ExecStart=/opt/mangos/zero/bin/mangosd -c /etc/mangos/zero/mangosd.conf
+Restart=on-abort
+User=mangoszero
+Group=mangos
+
+[Install]
+WantedBy=multi-user.target

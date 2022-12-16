@@ -1,0 +1,118 @@
+# Maintainer: samicrusader <hi@samicrusader.me>
+
+pkgname='mangos-zero'
+pkgver=22.04.1
+pkgrel=1
+pkgdesc='World of Warcraft Classic private server'
+arch=('x86_64')
+url='https://www.getmangos.eu/'
+license=('GPL2')
+groups=('mangos')
+depends=('glibc' 'openssl-1.1' 'libmariadbclient' 'which')
+makedepends=('gcc' 'make' 'cmake' 'git' 'unzip' 'rsync')
+optdepends=('mangos-realmd-git: realm list server')
+backup=('etc/mangos/zero/ahbot.conf' 'etc/mangos/zero/aiplayerbot.conf' 'etc/mangos/zero/mangosd.conf')
+install='mangos-zero.install'
+source=('git+https://github.com/mangoszero/server.git#commit=76b2ee5e997bfb508712945edc61c9214120766c' #tag=v$pkgver"
+        'git+https://github.com/mangos/mangosDeps.git'
+        'git+https://github.com/mangos/ScriptDev3.git'
+        'git+https://github.com/mangos/Extractor_projects.git'
+        'git+https://github.com/ElunaLuaEngine/Eluna.git'
+        '0000-set-directories.patch'
+        '0001-openssl-1.1.patch'
+        '0002-header-formatting.patch'
+        '0003-config-formatting.patch'
+        "$pkgname.service"
+        "$pkgname.sysusers"
+        "$pkgname.tmpfiles"
+        'Elysium Project Game Client.zip')
+noextract=('Elysium Project Game Client.zip')
+sha256sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            '8a8b841b8dc4698d642ff30f2f5aade4df204983daa88092807697a0506e8b3a'
+            '81563a6518dba0d4de08963bd37272a019ea93e6fbfb90cf88f4b7bbaf65ab30'
+            'ef266313db662f14f31a18222b8ed427520528e3ca64863b8b1554fc2d1b9451'
+            '688973f22700ab57d1085c4af53423db74f26ac80d05fab729cd731d99514615'
+            '26bf0964a3476f8e2bd734b65add341c47454fe417394f428c2d084753ca06f8'
+            '5a02c2a54e0ab044adfd29b12f5856654bd17cc0ae212ae2c31292998e4284db'
+            'b3e0a5e4d86e709a8403a79b97268cc1c7fdd8ed93896b32c769a9313b525d64'
+            '24288ded4d07e9dc9c6304b8c2c6574b8b7e43db51330df2a2ea1c8cda21886b')
+options=('!strip')
+
+prepare() {
+    echo 'Preparing server source...'
+    cd "$srcdir"/server/
+
+    git apply "$srcdir"/0000-set-directories.patch
+    git apply "$srcdir"/0001-openssl-1.1.patch
+    git apply "$srcdir"/0002-header-formatting.patch
+    git apply "$srcdir"/0003-config-formatting.patch
+
+    git submodule init
+    
+    git submodule deinit -f "src/realmd"
+    rm -rf "$srcdir"/server/.git/modules/src/realmd
+    git rm -f src/realmd
+    
+    git submodule deinit -f "win"
+    rm -rf "$srcdir"/server/.git/modules/win
+    git rm -f win
+    
+    git config submodule.dep.url "$srcdir/mangosDeps"
+    git config submodule.src/modules/SD3.url "$srcdir/ScriptDev3"
+    git config submodule.src/tools/Extractor_projects.url "$srcdir/Extractor_projects"
+    git config submodule.src/modules/Eluna.url "$srcdir/Eluna"
+    git -c protocol.file.allow=always submodule update
+
+    echo 'Preparing client...'
+    cd "$srcdir"
+    unzip "$srcdir/Elysium Project Game Client.zip"
+    mv "$srcdir/Elysium Project Game Client" "$srcdir"/client-1.12.1
+}
+
+build() {
+    echo 'Building server...'
+    cmake -S "$srcdir"/server/ -B "$srcdir"/build/ -DCMAKE_INSTALL_PREFIX="$srcdir"/out -DBUILD_MANGOSD=1 -DBUILD_REALMD=0 -DBUILD_TOOLS=1 -DUSE_STORMLIB=1 -DSCRIPT_LIB_ELUNA=1 -DSCRIPT_LIB_SD3=1 -DPLAYERBOTS=1 -DPCH=1
+    cd "$srcdir"/build/
+    make install
+    cp "$srcdir"/out/opt/mangos/zero/bin/tools/{*-extractor,offmesh.txt} "$srcdir"/client-1.12.1/
+    rm -rf "$srcdir"/out/{include,lib,opt/mangos/zero/bin/tools}
+
+    echo 'Building client files...'
+    cd "$srcdir"/client-1.12.1/
+    ./map-extractor
+    ./vmap-extractor
+    threads=$(grep -c ^processor /proc/cpuinfo)
+    echo "Building maps, this will take a while. Check your CPU usage."
+    # mmap-extractor returns a bad error code on a build with warnings, let's ignore them
+    ./mmap-extractor --threads $threads --silent --offMeshInput offmesh.txt 0 || true
+    ./mmap-extractor --threads $threads --silent --offMeshInput offmesh.txt 1 || true
+    # 40 and 25 breaks the program on multiple threads
+    ./mmap-extractor --silent --offMeshInput offmesh.txt 40 || true
+    ./mmap-extractor --silent --offMeshInput offmesh.txt 25 || true
+    maps=(169 269 309 533 509 529 30 469 209 329 531 33 529 36 489 47 230 429 48 90 229 349 369 449 450 34 43 70 109 129 189 249 389 169 37 451 13 35 42 44 29)
+    for _i in "${maps[@]}"
+    do
+      ./mmap-extractor --threads $threads --silent --offMeshInput offmesh.txt $_i || true
+    done
+}
+
+package() {
+    echo 'Copying client data...'
+    rsync -avr "$srcdir"/out/* "$pkgdir"
+    mkdir -p "$pkgdir"/var/lib/mangos/zero/
+    mv "$srcdir"/client-1.12.1/{dbc,maps,mmaps,vmaps} "$pkgdir"/var/lib/mangos/zero/
+    chmod -R 755 "$pkgdir"/var/lib/mangos/zero/
+    find "$pkgdir"/etc/mangos/zero/ -maxdepth 1 -type f -name '*.dist' -exec sh -c 'x={}; y=$(printf "${x%%.dist}"); mv "{}" "$y"' \;
+
+    echo 'Cloning database setup to /opt/mangos/zero...'
+    git clone https://github.com/mangoszero/database.git "$pkgdir"/opt/mangos/zero/database --recursive
+
+    echo 'Installing system files...'
+    install -Dm644 "$srcdir/$pkgname.service" "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+    install -Dm644 "$srcdir/$pkgname.sysusers" "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+    install -Dm644 "$srcdir/$pkgname.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+}

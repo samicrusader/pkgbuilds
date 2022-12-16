@@ -1,0 +1,70 @@
+From 29175a807850811c7ee2bdc20538e7a8e2d430e5 Mon Sep 17 00:00:00 2001
+From: samicrusader <hi@samicrusader.me>
+Date: Fri, 16 Dec 2022 01:18:39 -0500
+Subject: [PATCH] config
+
+---
+ src/mangosd/mangosd.conf.dist.in | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/src/mangosd/mangosd.conf.dist.in b/src/mangosd/mangosd.conf.dist.in
+index 851ca52..a3ca3d0 100644
+--- a/src/mangosd/mangosd.conf.dist.in
++++ b/src/mangosd/mangosd.conf.dist.in
+@@ -14,7 +14,7 @@ ConfVersion=@MANGOS_WORLD_VER@
+ #    DataDir
+ #        Data directory setting.
+ #        Important: DataDir needs to be quoted, as it is a string which may contain space characters.
+-#        Example: "${CMAKE_INSTALL_PREFIX}/share/mangos"
++#        Example: "/var/lib/mangos/zero"
+ #
+ #    LogsDir
+ #        Logs directory setting.
+@@ -61,8 +61,8 @@ ConfVersion=@MANGOS_WORLD_VER@
+ ################################################################################
+ 
+ RealmID                      = 1
+-DataDir                      = "@CONF_INSTALL_DIR@"
+-LogsDir                      = ""
++DataDir                      = "/var/lib/mangos/zero"
++LogsDir                      = "/var/log/mangos/zero"
+ LoginDatabaseInfo            = "127.0.0.1;3306;root;mangos;realmd"
+ WorldDatabaseInfo            = "127.0.0.1;3306;root;mangos;mangos0"
+ CharacterDatabaseInfo        = "127.0.0.1;3306;root;mangos;character0"
+@@ -255,7 +255,7 @@ MaxWhoListReturns                 = 49
+ #    PidFile
+ #        World daemon PID file
+ #        Default: ""             - do not create PID file
+-#                 "./worldd.pid" - create PID file (recommended name)
++#                 "/run/mangos/zero.pid" - create PID file (recommended name)
+ #
+ #    LogLevel
+ #        Server console level of logging
+@@ -387,12 +387,12 @@ MaxWhoListReturns                 = 49
+ ################################################################################
+ 
+ LogSQL                       = 1
+-PidFile                      = ""
+-LogLevel                     = 3
++PidFile                      = "/run/mangos/zero.pid"
++LogLevel                     = 0
+ LogTime                      = 0
+ LogFile                      = "world-server.log"
+ LogTimestamp                 = 0
+-LogFileLevel                 = 0
++LogFileLevel                 = 1
+ LogFilter_TransportMoves     = 1
+ LogFilter_CreatureMoves      = 1
+ LogFilter_VisibilityChanges  = 1
+@@ -1631,7 +1631,7 @@ Network.KickOnBadPacket = 0
+ #
+ ################################################################################
+ 
+-Console.Enable = 1
++Console.Enable = 0
+ 
+ Ra.Enable      = 0
+ Ra.IP          = 0.0.0.0
+-- 
+2.39.0
+

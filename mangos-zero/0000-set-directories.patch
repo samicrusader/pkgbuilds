@@ -1,0 +1,36 @@
+From acb06b864b17da6ec6a6dc01723aed32e498b971 Mon Sep 17 00:00:00 2001
+From: samicrusader <hi@samicrusader.me>
+Date: Wed, 14 Dec 2022 19:29:56 -0500
+Subject: [PATCH] set directories
+
+---
+ CMakeLists.txt | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a7de5f85..492e0f0b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -86,17 +86,8 @@ else()
+   set(CMAKE_BUILD_TYPE Release)
+ endif()
+ 
+-if(UNIX)
+-    set(BIN_DIR ${CMAKE_INSTALL_PREFIX}/bin)
+-    if (NOT CONF_INSTALL_DIR)
+-        set(CONF_INSTALL_DIR ../etc)
+-    endif()
+-else()
+-    set(BIN_DIR ${CMAKE_INSTALL_PREFIX})
+-    if (NOT CONF_INSTALL_DIR)
+-        set(CONF_INSTALL_DIR .)
+-    endif()
+-endif()
++set(BIN_DIR ${CMAKE_INSTALL_PREFIX}/opt/mangos/zero/bin)
++set(CONF_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/etc/mangos/zero)
+ 
+ if(NOT WITHOUT_GIT)
+   find_package(Git)
+-- 
+2.38.1
+

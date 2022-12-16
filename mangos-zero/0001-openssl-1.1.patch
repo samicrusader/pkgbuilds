@@ -1,0 +1,29 @@
+From c10bdf1e959ff34dbbe8615cd2a20996616a8d21 Mon Sep 17 00:00:00 2001
+From: samicrusader <hi@samicrusader.me>
+Date: Wed, 14 Dec 2022 19:25:27 -0500
+Subject: [PATCH] openssl-1.1
+
+---
+ CMakeLists.txt | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e5de65e0..a7de5f85 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -109,7 +109,11 @@ find_package(DL      REQUIRED)
+ find_package(ZLIB  QUIET)
+ find_package(BZip2 QUIET)
+ 
+-find_package(OpenSSL REQUIRED)
++set(OPENSSL_INCLUDE_DIR /usr/include/openssl-1.1)
++set(OPENSSL_SSL_LIBRARY /usr/lib/openssl-1.1/libssl.so)
++set(OPENSSL_CRYPTO_LIBRARY /usr/lib/openssl-1.1/libcrypto.so)
++
++find_package(OpenSSL 1.1.1 REQUIRED)
+ 
+ include(${CMAKE_SOURCE_DIR}/cmake/GenRevision.cmake)
+ include(${CMAKE_SOURCE_DIR}/cmake/EnsureVersion.cmake)
+-- 
+2.38.1
+

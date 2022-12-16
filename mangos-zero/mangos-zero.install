@@ -1,0 +1,8 @@
+post_install() {
+    echo 'MaNGOS Zero installed!'
+    echo 'Please remember to edit your configuration files and setup your database.'
+    echo
+    echo 'Configuration files are at /etc/mangos/zero,'
+    echo 'Database files are at /opt/mangos/zero/database, instructions are at:'
+    echo 'https://www.getmangos.eu/wiki/documentation/installation-guides/guideslinux/installing-mangos-on-ubuntu-server-2204-r40014/'
+}

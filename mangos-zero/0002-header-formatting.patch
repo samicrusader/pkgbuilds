@@ -1,0 +1,25 @@
+From 19c14010c942886647a3dff77ed6d8c3d48b1314 Mon Sep 17 00:00:00 2001
+From: samicrusader <hi@samicrusader.me>
+Date: Wed, 14 Dec 2022 19:28:12 -0500
+Subject: [PATCH] header formatting
+
+---
+ src/shared/SystemConfig.h.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/SystemConfig.h.in b/src/shared/SystemConfig.h.in
+index 63e0e0b4..e9eb42e2 100644
+--- a/src/shared/SystemConfig.h.in
++++ b/src/shared/SystemConfig.h.in
+@@ -55,7 +55,7 @@
+ # define MANGOS_ENDIAN_STRING "little-endian"
+ #endif
+ 
+-#define SYSCONFDIR "@CONF_INSTALL_DIR@/"
++#define SYSCONFDIR "/etc/mangos/zero/"
+ 
+ #define REALMD_CONFIG_NAME             "realmd.conf"
+ #define MANGOSD_CONFIG_NAME            "mangosd.conf"
+-- 
+2.38.1
+

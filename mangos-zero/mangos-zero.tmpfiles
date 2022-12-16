@@ -1,0 +1,10 @@
+d /etc/mangos 0755 root mangos
+d /etc/mangos/zero 0755 mangoszero mangos
+f /etc/mangos/zero/ahbot.conf 0644 mangoszero mangos
+f /etc/mangos/zero/aiplayerbot.conf 0644 mangoszero mangos
+f /etc/mangos/zero/mangosd.conf 0644 mangoszero mangos
+d /var/lib/mangos 0755 root mangos
+Z /var/lib/mangos/zero 0755 mangoszero mangos
+d /var/log/mangos 0755 root mangos
+d /var/log/mangos/zero 0755 mangoszero mangos
+d /run/mangos 0755 root mangos
