@@ -1,0 +1,3 @@
+u mangosrealmd - "MaNGOS realmd" / /usr/bin/nologin
+g mangos -
+m mangosrealmd mangos

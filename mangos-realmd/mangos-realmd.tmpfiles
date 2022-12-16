@@ -1,0 +1,5 @@
+d /etc/mangos 0755 root mangos
+f /etc/mangos/realmd.conf 0644 mangosrealmd mangos
+d /var/log/mangos 0755 root mangos
+d /var/log/mangos/realmd 0755 mangosrealmd mangos
+d /run/mangos 0755 root mangos

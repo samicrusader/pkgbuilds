@@ -1,0 +1,8 @@
+post_install() {
+    echo 'MaNGOS Realm Daemon installed!'
+    echo 'Please remember to edit your configuration files and setup your database.'
+    echo
+    echo 'Configuration files are at /etc/mangos.'
+    echo 'Database needs to be installed from another package.'
+    echo 'Start the service: systemctl start mangos-realmd'
+}

@@ -1,0 +1,66 @@
+# Maintainer: samicrusader <hi@samicrusader.me>
+
+_pkgname='mangos-realmd'
+pkgname="$_pkgname-git"
+pkgver=r208.7fc7d16
+pkgrel=1
+pkgdesc='World of Warcraft private server gateway'
+arch=('x86_64')
+url='https://www.getmangos.eu/'
+license=('GPL2')
+groups=('mangos')
+depends=('glibc' 'openssl-1.1' 'libmariadbclient')
+makedepends=('gcc' 'make' 'cmake' 'git' 'unzip')
+optdepends=(
+    'mangos-zero: World of Warcraft Classic'
+    'mangos-one: World of Warcraft: The Burning Crusade'
+    'mangos-two: World of Warcraft: The Wrath of the Lich King'
+    'mangos-three: World of Warcraft: The Cataclysm'
+    'mangos-four: World of Warcraft: Mists of Pandaria'
+)
+backup=('etc/mangos/realmd.conf')
+install="$_pkgname.install"
+source=('git+https://github.com/mangos/realmd.git'
+        'git+https://github.com/mangos/mangosDeps.git'
+        '0001-independent-build.patch'
+        "$_pkgname.service"
+        "$_pkgname.sysusers"
+        "$_pkgname.tmpfiles")
+sha256sums=('SKIP'
+            'SKIP'
+            '432071ff0177335a13f2bc157cbc3cac42fdb55dbd5a4fc304fcd540b22650e2'
+            '39606d286dc24065012f0c0cacce4f9f84186857377093dea9a5da4cdb571f38'
+            '971f6b5cfd9ac4caf45b8a07947642bbd96430ff7138e9f56eac60111f4de638'
+            '95210c4aff021c49690d928d5ddcbb755519444100054aa711885e8f0db96e23')
+
+pkgver() {
+    cd realmd
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+    echo 'Preparing server source...'
+    cd "$srcdir"/realmd
+    git apply "$srcdir"/0001-independent-build.patch
+    mv "$srcdir"/mangosDeps "$srcdir"/realmd/dep
+}
+
+build() {
+    echo 'Building server...'
+    cmake -S "$srcdir"/realmd/ -B "$srcdir"/build/
+    cd "$srcdir"/build/
+    make
+    sed -i 's/LogsDir                = ""/LogsDir                = "\/var\/log\/mangos\/realmd\/"/g' "$srcdir"/build/realmd.conf.dist
+    sed -i 's/PidFile                = ""/PidFile                = "\/run\/mangos\/realmd.pid"/g' "$srcdir"/build/realmd.conf.dist
+}
+
+package() {
+    echo 'Installing server files...'
+    install -Dm755 "$srcdir"/build/realmd "$pkgdir"/usr/bin/realmd
+    install -Dm644 "$srcdir"/build/realmd.conf.dist "$pkgdir"/etc/mangos/realmd.conf
+
+    echo 'Installing system files...'
+    install -Dm644 "$srcdir/$_pkgname.service" "$pkgdir/usr/lib/systemd/system/$_pkgname.service"
+    install -Dm644 "$srcdir/$_pkgname.sysusers" "$pkgdir/usr/lib/sysusers.d/$_pkgname.conf"
+    install -Dm644 "$srcdir/$_pkgname.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/$_pkgname.conf"
+}

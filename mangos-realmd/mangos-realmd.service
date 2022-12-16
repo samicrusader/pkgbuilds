@@ -1,0 +1,16 @@
+[Unit]
+Description=MaNGOS Realm Daemon
+Documentation=https://github.com/mangos/realmd
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/mangos/realmd.pid
+ExecStartPre=+/usr/bin/install -o mangosrealmd -g mangos /dev/null /run/mangos/realmd.pid
+ExecStart=/usr/bin/realmd -c /etc/mangos/realmd.conf
+Restart=on-abort
+User=mangosrealmd
+Group=mangos
+
+[Install]
+WantedBy=multi-user.target
