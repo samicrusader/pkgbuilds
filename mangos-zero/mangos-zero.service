@@ -14,3 +14,4 @@ Group=mangos
 
 [Install]
 WantedBy=multi-user.target
+
