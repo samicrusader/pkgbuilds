@@ -7,7 +7,7 @@ pkgbase=nvidia-snowman-utils
 pkgname=('nvidia-snowman-utils' 'opencl-nvidia-snowman' 'nvidia-snowman-dkms')
 pkgver=525.60.11
 _hostver=525.60.12
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 url='https://discord.gg/qh6dvPtxvb'
 license=('custom')
@@ -283,7 +283,7 @@ package_nvidia-snowman-utils() {
     install -Dm755 "nvidia-vgpud" "${pkgdir}/usr/bin/nvidia-vgpud"
     install -Dm755 "nvidia-vgpu-mgr" "${pkgdir}/usr/bin/nvidia-vgpu-mgr"
     install -Dm755 "sriov-manage" "${pkgdir}/usr/lib/nvidia/sriov-manage"
-    install -Dm644 "vgpuConfig.xml" "${pkgdir}//usr/share/nvidia/vgpu/vgpuConfig.xml"
+    install -Dm644 "vgpuConfig.xml" "${pkgdir}/usr/share/nvidia/vgpu/vgpuConfig.xml"
     install -Dm644 init-scripts/systemd/*.service -t "${pkgdir}/usr/lib/systemd/system"
     install -Dm644 "$srcdir/nvidia-grid.conf" "${pkgdir}/usr/share/dbus-1/system.d/nvidia-grid.conf"
 
