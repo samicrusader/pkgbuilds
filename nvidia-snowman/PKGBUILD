@@ -23,7 +23,7 @@ source=('nvidia-drm-outputclass.conf'
         'nvidia.rules'
         'nvidia-grid.conf'
         "https://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/${_consumerdriver}.run"
-        "https://luca.samicrusader.me/${_pkg}.zip"
+        "https://archive.biggerthanshit.com/NVIDIA/Complete%20vGPU%2015.0%20package%20for%20Linux%20KVM%20ALL%20including%20supported%20guest%20drivers/${_pkg}.zip"
         'git+https://github.com/VGPU-Community-Drivers/vGPU-Unlock-patcher.git#branch=525.60'
         'git+https://github.com/DualCoder/vgpu_unlock.git#commit=f432ffc8b7ed245df8858e9b38000d3b8f0352f4'
         'git+https://github.com/mbilker/vgpu_unlock-rs#commit=3c35e581cf3d04e85f5e04ee09ce64fc0a55a1ff')
